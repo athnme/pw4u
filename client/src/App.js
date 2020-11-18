@@ -5,11 +5,22 @@ import { getPassword } from "./api/passwords";
 
 function App() {
   const [password, setPassword] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const doFetch = async () => {
-      const newPassword = await getPassword("wifi");
-      setPassword(newPassword);
+      try {
+        setLoading(true);
+        setError(null);
+        const newPassword = await getPassword("wifi");
+        setPassword(newPassword);
+      } catch (error) {
+        console.error(error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
     };
     doFetch();
   }, []);
@@ -18,6 +29,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        {loading && <div>Loading...</div>}
+        {error && <div>{error.message}</div>}
         {password}
       </header>
     </div>
